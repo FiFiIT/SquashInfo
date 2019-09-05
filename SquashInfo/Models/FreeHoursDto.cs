@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SquashInfo.Models
 {
-    public class CourtDto
+    public class FreeHoursDto
     {
-        public int Number { get; set; }
-        public IList<FreeHoursDto> Free { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
     }
 }

@@ -15,12 +15,72 @@ namespace SquashInfo
         {
             FreeCourts = new List<CourtDto>
             {
-                new CourtDto(){Number=1, From = new DateTime(2019,9,4,19,0,0), To= new DateTime(2019,9,4,19,30,0)},
-                new CourtDto(){Number=1, From = new DateTime(2019,9,4,19,30,0), To= new DateTime(2019,9,4,20,00,0)},
-                new CourtDto(){Number=3, From = new DateTime(2019,9,4,17,0,0), To= new DateTime(2019,9,4,17,30,0)},
-                new CourtDto(){Number=3, From = new DateTime(2019,9,4,17,30,0), To= new DateTime(2019,9,4,18,00,0)},
-                new CourtDto(){Number=10, From = new DateTime(2019,9,4,16,0,0), To= new DateTime(2019,9,4,16,30,0)},
-                new CourtDto(){Number=10, From = new DateTime(2019,9,4,17,0,0), To= new DateTime(2019,9,4,17,30,0)}
+                new CourtDto()
+                {
+                    Number = 1,
+                    Free = new List<FreeHoursDto>
+                    {
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,0,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,00,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,16,00,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,16,30,0)
+                        }
+                    }
+                },
+                new CourtDto()
+                {
+                    Number = 3,
+                    Free = new List<FreeHoursDto>
+                    {
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,0,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,00,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,00,0)
+                        }
+                    }
+                },
+                new CourtDto()
+                {
+                    Number = 13,
+                    Free = new List<FreeHoursDto>
+                    {
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,0,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,00,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,23,00,0)
+                        }
+                    }
+                }
             };
         }
     }
