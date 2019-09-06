@@ -60,5 +60,10 @@ namespace SquashInfo.Services
             StreamReader myFile = new StreamReader(@"D:\GitHub\SquashInfo\SquashInfo\Services\sampleResponse.txt");
             return Task.Run(() => { return myFile.ReadToEnd(); });
         }
+
+        List<CourtDto> ISquashService.GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

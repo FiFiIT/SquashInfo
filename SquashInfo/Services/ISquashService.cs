@@ -8,7 +8,8 @@ namespace SquashInfo.Services
 {
     public interface ISquashService
     {
-        Task<string> GetSquashCourst(DateTime from, DateTime to);
-        List<CourtDto> ConvertSquashResponse(string hastaResponse);
+        //Task<string> GetSquashCourst(DateTime from, DateTime to);
+        //List<CourtDto> ConvertSquashResponse(string hastaResponse);
+        List<CourtDto> GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime);
     }
 }

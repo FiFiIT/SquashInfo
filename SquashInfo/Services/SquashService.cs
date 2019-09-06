@@ -11,6 +11,15 @@ namespace SquashInfo.Services
     {
         static readonly HttpClient client = new HttpClient();
 
+        public List<CourtDto> GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
+        {
+            string hastResponse = GetSquashCourst(fromTime, toTime).Result;
+            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse);
+            List<CourtDto> freeCourts = GetFreeCourts(allCourts, fromTime, toTime, requestedTime);
+
+            return freeCourts;
+        }
+
         public async Task<string> GetSquashCourst(DateTime from, DateTime to)
         {
             var values = new Dictionary<string, string>
@@ -29,7 +38,7 @@ namespace SquashInfo.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        public List<CourtDto> ConvertSquashResponse(string hastaResponse)
+        private List<CourtDto> ConvertSquashResponse(string hastaResponse)
         {
             const string startText = "<tr  data-obie_id=\"1\">";
             const string endText = "32</td></tr>";
@@ -73,6 +82,78 @@ namespace SquashInfo.Services
             }
 
             return squash;
+        }
+        private List<CourtDto> GetFreeCourts(List<CourtDto> FreeCourts, DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
+        {
+            var result = FreeCourts.SelectMany(c => c.Free, (court, freeHours) => new { court, freeHours })
+                .Where(courtAndHours => courtAndHours.freeHours.From >= fromTime && courtAndHours.freeHours.To <= toTime)
+                .Select(courtAndHours =>
+                    new
+                    {
+                        Number = courtAndHours.court.Number,
+                        Free = new FreeHoursDto()
+                        {
+                            From = courtAndHours.freeHours.From,
+                            To = courtAndHours.freeHours.To
+                        }
+                    }
+                ).GroupBy(c => c.Number,
+                    c => c.Free,
+                    (groupKey, Free) => new
+                    {
+                        Number = groupKey,
+                        Free
+                    });
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            List<CourtDto> korty = new List<CourtDto>();
+            CourtDto curCourt = null;
+
+            foreach (var kort in result)
+            {
+                curCourt = new CourtDto() { Number = kort.Number, Free = new List<FreeHoursDto>() };
+                FreeHoursDto prevTime = null;
+
+                foreach (var curTime in kort.Free)
+                {
+                    if (prevTime is null)
+                    {
+                        prevTime = curTime;
+                    }
+                    else
+                    {
+                        if (curTime.From == prevTime.To)
+                        {
+                            prevTime.To = curTime.To;
+                        }
+                        else
+                        {
+                            if (prevTime.AvailableTime >= requestedTime)
+                            {
+                                curCourt.Free.Add(prevTime);
+                            }
+
+                            prevTime = curTime;
+                        }
+                    }
+                }
+
+                if (prevTime.AvailableTime >= requestedTime)
+                {
+                    curCourt.Free.Add(prevTime);
+                }
+
+                if (curCourt.Free.Count() > 0)
+                {
+                    korty.Add(curCourt);
+                }
+            }
+
+            return korty;
         }
     }
 }
