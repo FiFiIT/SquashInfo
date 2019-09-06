@@ -14,11 +14,13 @@ namespace SquashInfo.Controllers
     {
         private readonly ILogger<SquashController> _logger;
         private readonly IMessanger _messanger;
+        private readonly ISquashService _squash;
 
-        public SquashController(ILogger<SquashController> logger, IMessanger messanger)
+        public SquashController(ILogger<SquashController> logger, IMessanger messanger, ISquashService squash)
         {
             _logger = logger;
             _messanger = messanger;
+            _squash = squash;
         }
 
         [HttpGet("freeCourts")]
@@ -27,42 +29,106 @@ namespace SquashInfo.Controllers
             return new JsonResult(SquashDataStore.Current.FreeCourts);
         }
 
-        [HttpGet("freeCourts/{from}/{to}")]
-        public IActionResult GetFreeCourtsFromTo(string from, string to)
+        [HttpGet("freeCourts/{from}/{to}/{minutes}")]
+        public IActionResult GetFreeCourtsFromTo(string from, string to, string minutes)
         {
 
-            if(!DateTime.TryParse(from, out DateTime fromTime))
+            if (!DateTime.TryParse(from, out DateTime fromTime))
             {
-                _logger.LogInformation($"System was not able to parse {from} to DateTime.");
-                return BadRequest($"System was not able to parse {from} to DateTime.");
+                _logger.LogInformation($"System was not able to parse {from} to Start Time.");
+                return BadRequest($"System was not able to parse {from} to Start Time.");
             }
 
             if (!DateTime.TryParse(to, out DateTime toTime))
             {
-                _logger.LogInformation($"System was not able to parse {to} to DateTime.");
-                return BadRequest($"System was not able to parse {to} to DateTime.");
+                _logger.LogInformation($"System was not able to parse {to} to End Time.");
+                return BadRequest($"System was not able to parse {to} to End Time.");
             }
 
-            //var result = SquashDataStore.Current.FreeCourts.SelectMany(c => c.Free).Where(h => h.From >= fromTime && h.To <= toTime);
-            //https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.selectmany?view=netframework-4.8
-            var result = SquashDataStore.Current.FreeCourts.SelectMany(c => c.Free, (court, freeHours) => new { court, freeHours })
+            if(!Int16.TryParse(minutes, out Int16 min))
+            {
+                _logger.LogInformation($"System was not able to parse {minutes} to reqested play time.");
+                return BadRequest($"System was not able to parse {minutes} to reqested play time.");
+            }
+            TimeSpan requestedTime = new TimeSpan(0, min, 0);
+
+            string response = _squash.GetSquashCourst(fromTime, toTime).Result;
+            var FreeCourts = _squash.ConvertSquashResponse(response);
+
+            //var FreeCourts = SquashDataStore.Current.FreeCourts;
+
+            var result = FreeCourts.SelectMany(c => c.Free, (court, freeHours) => new { court, freeHours })
                 .Where(courtAndHours => courtAndHours.freeHours.From >= fromTime && courtAndHours.freeHours.To <= toTime)
                 .Select(courtAndHours =>
-                    new
+                    new 
                     {
-                        Number = courtAndHours.court,
-                        FreeFrom = courtAndHours.freeHours.From,
-                        FreeTo = courtAndHours.freeHours.To
+                        Number = courtAndHours.court.Number,
+                        Free = new FreeHoursDto()
+                        {
+                            From = courtAndHours.freeHours.From,
+                            To = courtAndHours.freeHours.To
+                        }
                     }
-                );
+                ).GroupBy(c => c.Number,
+                    c => c.Free,
+                    (groupKey, Free) => new
+                    {
+                        Number = groupKey,
+                        Free
+                    });
 
             if (result == null)
             {
                 return NotFound();
             }
 
-            _messanger.Send("### Squash Team", $"API found {result.Count()} free squash courts ###");
-            return Ok(result);
+            List<CourtDto> korty = new List<CourtDto>();
+            CourtDto curCourt = null;
+
+            foreach (var kort in result)
+            {
+                curCourt = new CourtDto() { Number = kort.Number, Free = new List<FreeHoursDto>() };
+                FreeHoursDto prevTime = null;
+
+                foreach (var curTime in kort.Free)
+                {
+                    if (prevTime is null)
+                    {
+                        prevTime = curTime;
+                    }
+                    else
+                    {
+                        if (curTime.From == prevTime.To)
+                        {
+                            prevTime.To = curTime.To;
+                        }
+                        else
+                        {
+                            if (prevTime.AvailableTime >= requestedTime)
+                            {
+                                curCourt.Free.Add(prevTime);
+                            }
+
+                            prevTime = curTime;
+                        }
+                    }
+                }
+
+                if (prevTime.AvailableTime >= requestedTime)
+                {
+                    curCourt.Free.Add(prevTime);
+                }
+
+                if(curCourt.Free.Count() > 0)
+                {
+                    korty.Add(curCourt);
+                }
+            }
+
+
+
+            _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
+            return Ok(korty);
         }
     }
 }

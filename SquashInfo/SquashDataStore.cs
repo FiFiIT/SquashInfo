@@ -22,18 +22,18 @@ namespace SquashInfo
                     {
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,0,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,30,0)
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,0,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0)
                         },
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,30,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,00,0)
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,00,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,30,0)
                         },
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,16,00,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,16,30,0)
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,00,0)
                         }
                     }
                 },
@@ -44,18 +44,18 @@ namespace SquashInfo
                     {
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,0,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,20,30,0)
-                        },
-                        new FreeHoursDto()
-                        {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,00,0),
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,0,0),
                             To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0)
                         },
                         new FreeHoursDto()
                         {
                             From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0),
                             To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,00,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,00,0)
                         }
                     }
                 },
@@ -66,8 +66,13 @@ namespace SquashInfo
                     {
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,0,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,30,0)
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,0,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0)
+                        },
+                        new FreeHoursDto()
+                        {
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,17,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,00,0)
                         },
                         new FreeHoursDto()
                         {
@@ -76,8 +81,8 @@ namespace SquashInfo
                         },
                         new FreeHoursDto()
                         {
-                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,22,30,0),
-                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,23,00,0)
+                            From = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,18,30,0),
+                            To = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day,19,00,0)
                         }
                     }
                 }

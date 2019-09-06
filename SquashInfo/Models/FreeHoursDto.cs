@@ -9,5 +9,6 @@ namespace SquashInfo.Models
     {
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public TimeSpan AvailableTime { get { return To - From; } }
     }
 }
