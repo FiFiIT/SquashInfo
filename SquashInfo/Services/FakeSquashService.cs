@@ -63,7 +63,7 @@ namespace SquashInfo.Services
 
         List<CourtDto> ISquashService.GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
         {
-            throw new NotImplementedException();
+            return SquashDataStore.Current.NewCourts;
         }
     }
 }

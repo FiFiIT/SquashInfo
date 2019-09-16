@@ -26,7 +26,7 @@ namespace SquashInfo
             services.AddMvc();
 
             services.AddTransient<IMessanger, FakeMessanger>();
-            services.AddTransient<ISquashService, SquashService>();
+            services.AddTransient<ISquashService, FakeSquashService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
