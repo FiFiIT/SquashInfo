@@ -63,7 +63,7 @@ namespace SquashInfo.Services
 
         List<CourtDto> ISquashService.GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
         {
-            return SquashDataStore.Current.NewCourts;
+            return SquashDataStore.Current.NewCourts.Where(f => f.Number > 40).ToList<CourtDto>();
         }
     }
 }

@@ -35,23 +35,24 @@ namespace SquashInfo.Controllers
 
             if (!DateTime.TryParse(from, out DateTime fromTime))
             {
-                _logger.LogInformation($"System was not able to parse {from} to Start Time.");
+                _logger.LogError($"System was not able to parse {from} to Start Time.");
                 return BadRequest($"System was not able to parse {from} to Start Time.");
             }
 
             if (!DateTime.TryParse(to, out DateTime toTime))
             {
-                _logger.LogInformation($"System was not able to parse {to} to End Time.");
+                _logger.LogError($"System was not able to parse {to} to End Time.");
                 return BadRequest($"System was not able to parse {to} to End Time.");
             }
 
             if(!Int16.TryParse(minutes, out Int16 min))
             {
-                _logger.LogInformation($"System was not able to parse {minutes} to reqested play time.");
+                _logger.LogError($"System was not able to parse {minutes} to reqested play time.");
                 return BadRequest($"System was not able to parse {minutes} to reqested play time.");
             }
             TimeSpan requestedTime = new TimeSpan(0, min, 0);
 
+            _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {fromTime} to: {toTime} for: {requestedTime}");
             List<CourtDto> korty = _squash.GetFreeSquashCourts(fromTime, toTime, requestedTime);
 
             _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
