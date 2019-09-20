@@ -67,6 +67,7 @@ namespace SquashInfo
             });
 
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseHttpsRedirection();
 
             app.UseMvc();
         }
