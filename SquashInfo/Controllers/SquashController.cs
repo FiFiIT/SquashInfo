@@ -29,6 +29,17 @@ namespace SquashInfo.Controllers
             return new JsonResult(SquashDataStore.Current.FreeCourts);
         }
 
+        [HttpPost("freeCourtsExclude")]
+        public IActionResult GetFreeCourtsFromToExclude([FromBody] ReservationDto reservation)
+        {
+            ReservationRequest res = new ReservationRequest(reservation);
+            _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {res.FromTime} to: {res.ToTime} for: {res.Duration}");
+            List<CourtDto> korty = _squash.GetFreeSquashCourts(res);
+
+            _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
+            return Ok(korty);
+        }
+
         [HttpGet("freeCourts/{from}/{to}/{minutes}")]
         public IActionResult GetFreeCourtsFromTo(string from, string to, string minutes)
         {
@@ -53,10 +64,18 @@ namespace SquashInfo.Controllers
             TimeSpan requestedTime = new TimeSpan(0, min, 0);
 
             _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {fromTime} to: {toTime} for: {requestedTime}");
-            List<CourtDto> korty = _squash.GetFreeSquashCourts(fromTime, toTime, requestedTime);
+            List<CourtDto> korty = _squash.GetFreeSquashCourts(new ReservationRequest() { FromTime= fromTime, ToTime= toTime,Duration= requestedTime });
 
             _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
             return Ok(korty);
+        }
+
+        private ReservationRequest ConvertReservation(ReservationDto reservation)
+        {
+            ReservationRequest request = new ReservationRequest(reservation);
+
+
+            return request;
         }
     }
 }

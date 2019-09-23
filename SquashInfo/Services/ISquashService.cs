@@ -10,6 +10,6 @@ namespace SquashInfo.Services
     {
         //Task<string> GetSquashCourst(DateTime from, DateTime to);
         //List<CourtDto> ConvertSquashResponse(string hastaResponse);
-        List<CourtDto> GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime);
+        List<CourtDto> GetFreeSquashCourts(ReservationRequest request);
     }
 }

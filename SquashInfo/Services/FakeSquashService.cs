@@ -55,15 +55,16 @@ namespace SquashInfo.Services
             return squash;
         }
 
+        public List<CourtDto> GetFreeSquashCourts(ReservationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<string> GetSquashCourst(DateTime from, DateTime to)
         {
             StreamReader myFile = new StreamReader(@"D:\GitHub\SquashInfo\SquashInfo\Services\sampleResponse.txt");
             return Task.Run(() => { return myFile.ReadToEnd(); });
         }
 
-        List<CourtDto> ISquashService.GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
-        {
-            return SquashDataStore.Current.NewCourts.Where(f => f.Number > 40).ToList<CourtDto>();
-        }
     }
 }

@@ -11,11 +11,11 @@ namespace SquashInfo.Services
     {
         static readonly HttpClient client = new HttpClient();
 
-        public List<CourtDto> GetFreeSquashCourts(DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
+        public List<CourtDto> GetFreeSquashCourts(ReservationRequest request)
         {
-            string hastResponse = GetSquashCourst(fromTime, toTime).Result;
-            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse);
-            List<CourtDto> freeCourts = GetFreeCourts(allCourts, fromTime, toTime, requestedTime);
+            string hastResponse = GetSquashCourst(request.FromTime, request.ToTime).Result;
+            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse).Where(c => !request.Exclude.Contains(c.Number)).ToList();
+            List<CourtDto> freeCourts = GetFreeCourts(allCourts, request.FromTime, request.ToTime, request.Duration);
 
             return freeCourts;
         }
@@ -83,7 +83,7 @@ namespace SquashInfo.Services
 
             return squash;
         }
-        private List<CourtDto> GetFreeCourts(List<CourtDto> FreeCourts, DateTime fromTime, DateTime toTime, TimeSpan requestedTime)
+        private List<CourtDto> GetFreeCourts(List<CourtDto> FreeCourts, DateTime fromTime, DateTime toTime, TimeSpan duration)
         {
             var result = FreeCourts.SelectMany(c => c.Free, (court, freeHours) => new { court, freeHours })
                 .Where(courtAndHours => courtAndHours.freeHours.From >= fromTime && courtAndHours.freeHours.To <= toTime)
@@ -132,7 +132,7 @@ namespace SquashInfo.Services
                         }
                         else
                         {
-                            if (prevTime.AvailableTime >= requestedTime)
+                            if (prevTime.AvailableTime >= duration)
                             {
                                 curCourt.Free.Add(prevTime);
                             }
@@ -142,7 +142,7 @@ namespace SquashInfo.Services
                     }
                 }
 
-                if (prevTime.AvailableTime >= requestedTime)
+                if (prevTime.AvailableTime >= duration)
                 {
                     curCourt.Free.Add(prevTime);
                 }
