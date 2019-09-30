@@ -35,11 +35,11 @@ namespace SquashInfo
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000");
+                    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
                 });
             });
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2);
 
             services.AddTransient<IMessanger, FakeMessanger>();
             _logger.LogInformation("Add FakeMessanger to services");
@@ -60,15 +60,19 @@ namespace SquashInfo
                 _logger.LogInformation("In Development environment");
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHsts();
+            }
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
-
             app.UseMvc();
         }
     }

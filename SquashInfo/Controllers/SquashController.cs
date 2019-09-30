@@ -32,7 +32,21 @@ namespace SquashInfo.Controllers
         [HttpPost("freeCourtsExclude")]
         public IActionResult GetFreeCourtsFromToExclude([FromBody] ReservationDto reservation)
         {
-            ReservationRequest res = new ReservationRequest(reservation);
+            if(reservation == null)
+            {
+                return BadRequest(reservation);
+            }
+
+            ReservationRequest res;
+            try
+            {
+                res = new ReservationRequest(reservation);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
             _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {res.FromTime} to: {res.ToTime} for: {res.Duration}");
             List<CourtDto> korty = _squash.GetFreeSquashCourts(res);
 
@@ -40,35 +54,35 @@ namespace SquashInfo.Controllers
             return Ok(korty);
         }
 
-        [HttpGet("freeCourts/{from}/{to}/{minutes}")]
-        public IActionResult GetFreeCourtsFromTo(string from, string to, string minutes)
-        {
+        //[HttpGet("freeCourts/{from}/{to}/{minutes}")]
+        //public IActionResult GetFreeCourtsFromTo(string from, string to, string minutes)
+        //{
 
-            if (!DateTime.TryParse(from, out DateTime fromTime))
-            {
-                _logger.LogError($"System was not able to parse {from} to Start Time.");
-                return BadRequest($"System was not able to parse {from} to Start Time.");
-            }
+        //    if (!DateTime.TryParse(from, out DateTime fromTime))
+        //    {
+        //        _logger.LogError($"System was not able to parse {from} to Start Time.");
+        //        return BadRequest($"System was not able to parse {from} to Start Time.");
+        //    }
 
-            if (!DateTime.TryParse(to, out DateTime toTime))
-            {
-                _logger.LogError($"System was not able to parse {to} to End Time.");
-                return BadRequest($"System was not able to parse {to} to End Time.");
-            }
+        //    if (!DateTime.TryParse(to, out DateTime toTime))
+        //    {
+        //        _logger.LogError($"System was not able to parse {to} to End Time.");
+        //        return BadRequest($"System was not able to parse {to} to End Time.");
+        //    }
 
-            if(!Int16.TryParse(minutes, out Int16 min))
-            {
-                _logger.LogError($"System was not able to parse {minutes} to reqested play time.");
-                return BadRequest($"System was not able to parse {minutes} to reqested play time.");
-            }
-            TimeSpan requestedTime = new TimeSpan(0, min, 0);
+        //    if(!Int16.TryParse(minutes, out Int16 min))
+        //    {
+        //        _logger.LogError($"System was not able to parse {minutes} to reqested play time.");
+        //        return BadRequest($"System was not able to parse {minutes} to reqested play time.");
+        //    }
+        //    TimeSpan requestedTime = new TimeSpan(0, min, 0);
 
-            _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {fromTime} to: {toTime} for: {requestedTime}");
-            List<CourtDto> korty = _squash.GetFreeSquashCourts(new ReservationRequest() { FromTime= fromTime, ToTime= toTime,Duration= requestedTime });
+        //    _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {fromTime} to: {toTime} for: {requestedTime}");
+        //    List<CourtDto> korty = _squash.GetFreeSquashCourts(new ReservationRequest() { FromTime= fromTime, ToTime= toTime,Duration= requestedTime });
 
-            _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
-            return Ok(korty);
-        }
+        //    _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
+        //    return Ok(korty);
+        //}
 
         private ReservationRequest ConvertReservation(ReservationDto reservation)
         {

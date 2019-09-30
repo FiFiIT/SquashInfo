@@ -7,8 +7,9 @@ namespace SquashInfo.Models
 {
     public class ReservationDto
     {
-        public string From { get; set; }
-        public string To { get; set; }
+        public string StartDate { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
         public int Duration { get; set; }
         public List<int> Exclude { get; set; }
     }
