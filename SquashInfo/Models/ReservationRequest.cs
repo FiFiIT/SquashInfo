@@ -18,22 +18,31 @@ namespace SquashInfo.Models
         {
             if (DateTime.TryParse(res.StartDate, out DateTime startDate))
             {
-                FromTime = startDate;
+                StartDate = startDate;
             }
             else
             {
                 throw new Exception($"StartDate parameter cannot be converted: '{res.StartDate}'");
             }
 
-            if (DateTime.TryParse(res.StartTime, out DateTime fromTime))
+            if (TimeSpan.TryParse(res.StartTime, out TimeSpan fromTime))
             {
-                StartDate = fromTime;
+                FromTime = StartDate.Add(fromTime);
+            }
+            else
+            {
+                throw new Exception($"StartTime parameter cannot be converted: '{res.StartTime}'");
             }
 
-            if (DateTime.TryParse(res.EndTime, out DateTime toTime))
+            if (TimeSpan.TryParse(res.EndTime, out TimeSpan toTime))
             {
-                ToTime = toTime;
+                ToTime = StartDate.Add(toTime);
             }
+            else
+            {
+                throw new Exception($"EndTime parameter cannot be converted: '{res.EndTime}'");
+            }
+
 
             Duration = new TimeSpan(0, res.Duration, 0);
 

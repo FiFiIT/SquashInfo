@@ -11,10 +11,12 @@ namespace SquashInfo.Services
     {
         static readonly HttpClient client = new HttpClient();
 
+
         public List<CourtDto> GetFreeSquashCourts(ReservationRequest request)
         {
             string hastResponse = GetSquashCourst(request.FromTime, request.ToTime).Result;
-            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse).Where(c => !request.Exclude.Contains(c.Number)).ToList();
+            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse);
+            allCourts = allCourts.Where(c => !request.Exclude.Contains(c.Number)).ToList();
             List<CourtDto> freeCourts = GetFreeCourts(allCourts, request.FromTime, request.ToTime, request.Duration);
 
             return freeCourts;
@@ -22,18 +24,37 @@ namespace SquashInfo.Services
 
         public async Task<string> GetSquashCourst(DateTime from, DateTime to)
         {
+            string startHour;
+            string endHour;
+
+            if(to.Hour < 15) {
+                startHour = "06:00";
+                endHour = "15:00";
+            }else if(to.Hour < 20)
+            {
+                startHour = "11:00";
+                endHour = "20:00";
+            }
+            else
+            {
+                startHour = "15:00";
+                endHour = "00:00";
+            }
+
+
             var values = new Dictionary<string, string>
             {
                 { "operacja", "ShowRezerwacjeTable" },
                 { "action", "ShowRezerwacjeTable" },
                 { "data", $"{from.ToString("yyyy-MM-dd")}" },
                 { "obiekt_typ", "squash" },
-                { "godz_od", $"{from.ToString("HH:mm")}" },
-                { "godz_do", $"{to.ToString("HH:mm")}" }
+                { "godz_od", $"{startHour}" },
+                { "godz_do", $"{endHour}" }
             };
 
             var content = new FormUrlEncodedContent(values);
-            var response = await client.PostAsync("http://hastalavista.pl/squash/klub/rezerwacje-2/", content);
+            //var response = await client.PostAsync("http://hastalavista.pl/squash/klub/rezerwacje-2/", content);
+            var response = await client.PostAsync("http://hastalavista.pl/wp-admin/admin-ajax.php", content);
 
             return await response.Content.ReadAsStringAsync();
         }
