@@ -7,7 +7,7 @@ namespace SquashInfo.Models
 {
     public class ReservationRequest
     {
-        private DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime FromTime { get; set; }
         public DateTime ToTime { get; set; }
         public TimeSpan Duration { get; set; }

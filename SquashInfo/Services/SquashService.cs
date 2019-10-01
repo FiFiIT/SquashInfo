@@ -15,7 +15,7 @@ namespace SquashInfo.Services
         public List<CourtDto> GetFreeSquashCourts(ReservationRequest request)
         {
             string hastResponse = GetSquashCourst(request.FromTime, request.ToTime).Result;
-            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse);
+            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse, request.StartDate);
             allCourts = allCourts.Where(c => !request.Exclude.Contains(c.Number)).ToList();
             List<CourtDto> freeCourts = GetFreeCourts(allCourts, request.FromTime, request.ToTime, request.Duration);
 
@@ -59,7 +59,7 @@ namespace SquashInfo.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        private List<CourtDto> ConvertSquashResponse(string hastaResponse)
+        private List<CourtDto> ConvertSquashResponse(string hastaResponse, DateTime StartDate)
         {
             const string startText = "<tr  data-obie_id=\"1\">";
             const string endText = "32</td></tr>";
@@ -96,7 +96,7 @@ namespace SquashInfo.Services
                 }
 
                 List<FreeHoursDto> hours = inputNodes
-                    .Select(i => new FreeHoursDto { From = DateTime.Parse(i.Attributes["data-godz_od"].Value), To = DateTime.Parse(i.Attributes["data-godz_do"].Value) }).ToList();
+                    .Select(i => new FreeHoursDto { From = StartDate + TimeSpan.Parse(i.Attributes["data-godz_od"].Value), To = StartDate + TimeSpan.Parse(i.Attributes["data-godz_do"].Value) }).ToList();
 
                 court.Free = hours;
                 squash.Add(court);
@@ -104,6 +104,11 @@ namespace SquashInfo.Services
 
             return squash;
         }
+        public List<CourtDto> GroupFreeCourts(List<CourtDto> FreeCourts, DateTime fromTime, DateTime toTime, TimeSpan duration)
+        {
+            return GetFreeCourts(FreeCourts, fromTime, toTime, duration);
+        }
+
         private List<CourtDto> GetFreeCourts(List<CourtDto> FreeCourts, DateTime fromTime, DateTime toTime, TimeSpan duration)
         {
             var result = FreeCourts.SelectMany(c => c.Free, (court, freeHours) => new { court, freeHours })
