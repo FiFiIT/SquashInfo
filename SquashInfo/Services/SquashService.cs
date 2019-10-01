@@ -14,15 +14,15 @@ namespace SquashInfo.Services
 
         public List<CourtDto> GetFreeSquashCourts(ReservationRequest request)
         {
-            string hastResponse = GetSquashCourst(request.FromTime, request.ToTime).Result;
-            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse, request.StartDate);
+            string hastResponse = GetSquashCourst(request.FromTime, request.ToTime, request.Type).Result;
+            List<CourtDto> allCourts = ConvertSquashResponse(hastResponse, request.StartDate, request.Type);
             allCourts = allCourts.Where(c => !request.Exclude.Contains(c.Number)).ToList();
             List<CourtDto> freeCourts = GetFreeCourts(allCourts, request.FromTime, request.ToTime, request.Duration);
 
             return freeCourts;
         }
 
-        public async Task<string> GetSquashCourst(DateTime from, DateTime to)
+        public async Task<string> GetSquashCourst(DateTime from, DateTime to, string type)
         {
             string startHour;
             string endHour;
@@ -47,7 +47,7 @@ namespace SquashInfo.Services
                 { "operacja", "ShowRezerwacjeTable" },
                 { "action", "ShowRezerwacjeTable" },
                 { "data", $"{from.ToString("yyyy-MM-dd")}" },
-                { "obiekt_typ", "squash" },
+                { "obiekt_typ", $"{type}" },
                 { "godz_od", $"{startHour}" },
                 { "godz_do", $"{endHour}" }
             };
@@ -59,10 +59,15 @@ namespace SquashInfo.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        private List<CourtDto> ConvertSquashResponse(string hastaResponse, DateTime StartDate)
+        private List<CourtDto> ConvertSquashResponse(string hastaResponse, DateTime StartDate, string type)
         {
-            const string startText = "<tr  data-obie_id=\"1\">";
-            const string endText = "32</td></tr>";
+            string startText = "<tr  data-obie_id=\"1\">";
+            string endText = "32</td></tr>";
+            if(type == "badminton")
+            {
+                startText = "<tr  data-obie_id=\"30\">";
+                endText = "10</td></tr>"; //there is less courts on badminton
+            }
 
             var start = hastaResponse.IndexOf(startText);
             var end = hastaResponse.IndexOf(endText, start) + endText.Length;

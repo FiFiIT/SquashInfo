@@ -12,5 +12,6 @@ namespace SquashInfo.Models
         public string EndTime { get; set; }
         public int Duration { get; set; }
         public List<int> Exclude { get; set; }
+        public string Type { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace SquashInfo.Models
         public DateTime ToTime { get; set; }
         public TimeSpan Duration { get; set; }
         public List<int> Exclude { get; set; }
+        public string Type { get; set; }
         public ReservationRequest() { }
 
         public ReservationRequest(ReservationDto res)
@@ -43,8 +44,8 @@ namespace SquashInfo.Models
                 throw new Exception($"EndTime parameter cannot be converted: '{res.EndTime}'");
             }
 
-
             Duration = new TimeSpan(0, res.Duration, 0);
+            Type = res.Type;
 
             Exclude = res.Exclude;
         }
