@@ -35,7 +35,7 @@ namespace SquashInfo
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                    builder.WithOrigins("http://localhost:3000", "http://localhost:5000").AllowAnyMethod().AllowAnyHeader();
                 });
             });
 
