@@ -7,6 +7,8 @@ namespace SquashInfo.Models
 {
     public class ReservationRequest
     {
+        public string Login { get; set; }
+        public string Password { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime FromTime { get; set; }
         public DateTime ToTime { get; set; }
@@ -48,6 +50,11 @@ namespace SquashInfo.Models
             Type = res.Type;
 
             Exclude = res.Exclude;
+        }
+
+        internal bool isLogged()
+        {
+            return !String.IsNullOrEmpty(Login) && !String.IsNullOrEmpty(Password);
         }
     }
 }

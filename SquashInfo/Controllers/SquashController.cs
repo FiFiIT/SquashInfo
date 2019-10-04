@@ -50,8 +50,39 @@ namespace SquashInfo.Controllers
             _logger.LogInformation($"Squash Controller is reqesting Free Courts from: {res.FromTime} to: {res.ToTime} for: {res.Duration}");
             List<CourtDto> korty = _squash.GetFreeSquashCourts(res);
 
+            if(korty.Count() > 0 && res.isLogged())
+            {
+                var bookRequest = new BookRequestDto(res);
+
+                var response = _squash.RezerwujTest(bookRequest);
+                return Ok(korty);
+            }
+
             _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
+
             return Ok(korty);
+        }
+
+       [HttpPost("bookCourt")]
+       public IActionResult BookCourt([FromBody] BookRequestDto book)
+        {
+            if(book == null)
+            {
+                return BadRequest("Request was empty");
+            }
+
+            var response = _squash.RezerwujTest(book);
+
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return Ok(response.Content);
+            }
+            else
+            {
+                return BadRequest(response.Content);
+            }
+
+            
         }
 
         //[HttpGet("freeCourts/{from}/{to}/{minutes}")]
