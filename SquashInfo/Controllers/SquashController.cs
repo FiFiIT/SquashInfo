@@ -52,18 +52,55 @@ namespace SquashInfo.Controllers
 
             if(korty.Count() > 0 && res.isLogged())
             {
-                var bookRequest = new BookRequestDto(res);
+                var kort = korty.FirstOrDefault();
+                var freeTime = kort.Free.FirstOrDefault();
+                int lenght = (res.Duration.Hours * 60 + res.Duration.Minutes) / 30;
+                kort.Free.Clear();
+               
+                for(int i = 0; i < lenght; i++)
+                {
+                    var time = new FreeHoursDto() { From = freeTime.From.AddMinutes(i * 30), To = freeTime.From.AddMinutes((i * 30) + 30) };
+                    kort.Free.Add(time);
+                }
 
-                var response = _squash.RezerwujTest(bookRequest);
-                return Ok(korty);
+                var book = GenerateBookRequest(kort, res);
+                var rezerwujResponse = _squash.RezerwujTest(book);
+
+                if (rezerwujResponse != null && rezerwujResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    kort.Booked = true;
+                    var restult = new List<CourtDto>();
+                    restult.Add(kort);
+                    return Ok(restult);
+                }
             }
 
             _messanger.Send("### Squash Team", $"API found {korty.Count()} free squash courts ###");
-
             return Ok(korty);
         }
 
-       [HttpPost("bookCourt")]
+        public BookRequestDto GenerateBookRequest(CourtDto kort, ReservationRequest res)
+        {
+            var freeTime = new FreeHoursDto() { From = kort.Free.FirstOrDefault().From, To = kort.Free.FirstOrDefault().To };
+            var bookRequest = new BookRequestDto(res);
+            int lenght = (res.Duration.Hours * 60 + res.Duration.Minutes) / 30;
+            string[] tmpRez = new string[lenght];
+            string tmp = String.Empty;
+
+            for(int i = 0; i < lenght; i++)
+            {
+                tmp = $"{kort.ObkietId}_{freeTime.From.Hour}:{freeTime.From.Minute.ToString("D2")}_";
+                freeTime.From = freeTime.From.AddMinutes(30);
+                tmp += $"{freeTime.From.Hour}:{freeTime.From.Minute.ToString("D2")}";
+
+                tmpRez[i] = tmp;
+            }
+
+            bookRequest.Rez = tmpRez;
+            return bookRequest;
+        }
+
+        [HttpPost("bookCourt")]
        public IActionResult BookCourt([FromBody] BookRequestDto book)
         {
             if(book == null)

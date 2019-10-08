@@ -10,5 +10,6 @@ namespace SquashInfo.Models
         public int Number { get; set; }
         public int ObkietId { get; set; }
         public IList<FreeHoursDto> Free { get; set; }
+        public bool Booked { get; set; }
     }
 }

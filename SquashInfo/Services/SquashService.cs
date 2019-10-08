@@ -50,7 +50,9 @@ namespace SquashInfo.Services
                     client.DefaultRequestHeaders.Add("Host", "hastalavista.pl");
                     client.DefaultRequestHeaders.Add("Connection", "keep-alive");
                     //client.DefaultRequestHeaders.Add("Content-Length", 100);
+                    client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
                     client.DefaultRequestHeaders.Add("Accept", "*/*");
+                    client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
                     client.DefaultRequestHeaders.Add("Origin", "http://hastalavista.pl/");
                     client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
                     client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
@@ -201,15 +203,13 @@ namespace SquashInfo.Services
 
                 docHelp.LoadHtml(node.InnerHtml);
                 string v = docHelp.DocumentNode.SelectSingleNode("td").InnerText;
-                
-
                 if (String.IsNullOrEmpty(v) || !Int32.TryParse(v, out int courtNumber))
                 {
                     continue;
                 }
 
-
-                if (String.IsNullOrEmpty(v) || !Int32.TryParse(v, out int obiektId))
+                string obiekt = node.Attributes["data-obie_id"].Value;
+                if (String.IsNullOrEmpty(obiekt) || !Int32.TryParse(obiekt, out int obiektId))
                 {
                     continue;
                 }
@@ -243,14 +243,14 @@ namespace SquashInfo.Services
                 .Select(courtAndHours =>
                     new
                     {
-                        Number = courtAndHours.court.Number,
+                        Number = courtAndHours.court.Number + "_" + courtAndHours.court.ObkietId,
                         Free = new FreeHoursDto()
                         {
                             From = courtAndHours.freeHours.From,
                             To = courtAndHours.freeHours.To
                         }
                     }
-                ).GroupBy(c => c.Number,
+                ).GroupBy(c => c.Number, 
                     c => c.Free,
                     (groupKey, Free) => new
                     {
@@ -265,10 +265,16 @@ namespace SquashInfo.Services
 
             List<CourtDto> korty = new List<CourtDto>();
             CourtDto curCourt = null;
+            string num, obiekt;
+            int index;
 
             foreach (var kort in result)
             {
-                curCourt = new CourtDto() { Number = kort.Number, Free = new List<FreeHoursDto>() };
+                index = kort.Number.IndexOf("_");
+                num = kort.Number.Substring(0, index);
+                obiekt = kort.Number.Substring(index + 1);
+
+                curCourt = new CourtDto() { Number = Int32.Parse(num), ObkietId = Int32.Parse(obiekt), Free = new List<FreeHoursDto>() };
                 FreeHoursDto prevTime = null;
 
                 foreach (var curTime in kort.Free)

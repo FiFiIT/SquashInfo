@@ -9,6 +9,10 @@ namespace SquashInfo.Models
     {
         private ReservationRequest res;
 
+        public BookRequestDto()
+        {
+        }
+
         public BookRequestDto(ReservationRequest res)
         {
             Login = res.Login;

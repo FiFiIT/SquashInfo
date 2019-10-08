@@ -48,6 +48,8 @@ namespace SquashInfo.Models
 
             Duration = new TimeSpan(0, res.Duration, 0);
             Type = res.Type;
+            Login = res.Email;
+            Password = res.Password;
 
             Exclude = res.Exclude;
         }
